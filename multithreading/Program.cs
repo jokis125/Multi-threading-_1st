@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*Author Jokubas Kondrackas
+Norint kad butu race condition reikia carpark.FillParkingSpots(bool safe) iskviesti su argumentu false
+Kvieciant su true race condition neivyksta, nes apsaugota kritine sritis
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,33 +17,22 @@ namespace ConsoleApp1
             var size = 10000;
             var carpark = new ParkingLot(size);
             
-            //carpark.FillParkingSpace();
-            
-            //for(var i = 0; i < size/2; i++)
-                //carpark.RemoveCarById(_random.Next(0, size/2));
-
-                /*for (var i = 0; i < size; i++)
-                {
-                    threadList.Add(new Thread(carpark.AddRandomCarSafe));
-                }*/
-                
             List<Thread> threadList = new List<Thread>();
             for (var i = 0; i < 16; i++)
             {
-                threadList.Add(new Thread(()=> carpark.FillParkingSpots(true)));
+                threadList.Add(new Thread(()=> carpark.FillParkingSpots(false)));
             }
 
             foreach (var thread in threadList)
             {
                 thread.Start();
-                //thread.Join();
             }
 
             foreach (var thread in threadList)
             {
                 thread.Join();
             }
-            carpark.PrintParkingSpace();
+            //carpark.PrintParkingSpace();
             carpark.CheckForRaceCondition();
 
         }
